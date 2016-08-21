@@ -14,10 +14,6 @@ describe('SimpleFolderWatcher - basic', function() {
   // across plaforms that it works on those actual platforms.
   // I'm too lazy to make a tmpdir with some modules so ...
   var tempDir = path.join(__dirname, "temp");
-  var tempDir2 = path.join(__dirname, "temp2");
-  var tempDir3 = path.join(__dirname, "temp/temp2");
-  var newFiles;
-  var newDirs;
   var initialContent = "abc";
   var newContent = "abcdef";
   var watcher;
@@ -25,19 +21,9 @@ describe('SimpleFolderWatcher - basic', function() {
   var nameAtRoot = path.join(tempDir, "moo.txt");
   var nameOfSub = path.join(tempDir, "sub1b");
   var nameAtSub = path.join(nameOfSub, "moo3.txt");
+  var nameOfSubSub = path.join(nameOfSub, "sub2b");
   var timeout = 1000;
   var testFS = new TestFS();
-
-  function notIn2(array1, array2) {
-    var a2Set = new Set(array2);
-    return array1.filter((elem) => {
-      return !a2Set.has(elem);
-    });
-  }
-
-  function diff(array1, array2) {
-    return notIn2(array1, array2).concat(notIn2(array2, array1));
-  }
 
   function wait(fn) {
     setTimeout(fn, timeout);
@@ -246,6 +232,16 @@ describe('SimpleFolderWatcher - basic', function() {
     fs.unlinkSync(nameAtSub);
   });
 
+  it('does not report sub folder added to subfolder', (done) => {
+    wait(() => {
+      var events = recorder.getEvents();
+      assert.equal(events.length, 0, "there's no change event for file in subfolder");
+      noMoreEvents();
+      done();
+    });
+    testFS.mkdir(nameOfSubSub);
+  });
+
   it('does not report sub folder removed from subfolder', (done) => {
     wait(() => {
       var events = recorder.getEvents();
@@ -253,7 +249,7 @@ describe('SimpleFolderWatcher - basic', function() {
       noMoreEvents();
       done();
     });
-    fs.rmdirSync(nameOfSub);
+    fs.rmdirSync(nameOfSubSub);
   });
 
 });

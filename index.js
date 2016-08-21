@@ -135,7 +135,6 @@ class SimpleFolderWatcher extends EventEmitter {
         }
       } else {
         this._entries.set(fileName, stats);
-        var scan = false;
         if (oldStats) {
           if (oldStats.size !== stats.size ||
               oldStats.mtime !== stats.mtime) {
@@ -143,7 +142,6 @@ class SimpleFolderWatcher extends EventEmitter {
           }
         } else {
           this.emit(addOrCreate, fullPath, stats);
-          scan = true;
         }
       }
     });
