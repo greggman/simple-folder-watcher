@@ -5,6 +5,8 @@ SimpleFolderWatcher
 
 Watches a directory for changes. To watch a tree see [simple-tree-watcher](https://github.com/greggman/simple-tree-watcher)
 
+Sometimes it's more useful to watch folder separately than to watch a whole tree
+
 Hopefully it actually works unlike other watch libaries
 
 ## Example:
