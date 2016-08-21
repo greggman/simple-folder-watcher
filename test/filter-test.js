@@ -3,11 +3,11 @@
 const debug = require('../lib/debug')('filter-test');  // eslint-disable-line
 const assert = require('assert');
 const path = require('path');
-const SimpleTreeWatcher  = require('../index.js');
+const SimpleFolderWatcher  = require('../index.js');
 const EventRecorder = require('../test-lib/event-recorder');
 const TestFS = require('../test-lib/test-fs');
 
-describe('SimpleTreeWatcher - filtering:', function() {
+describe('SimpleFolderWatcher - filtering:', function() {
 
   // NOTE: We use the real filesystem because we need to test
   // across plaforms that it works on those actual platforms.
@@ -51,19 +51,6 @@ describe('SimpleTreeWatcher - filtering:', function() {
     done();
   }
 
-  function getWatcherDir(dir, parent) {
-    parent = parent || watcher;
-    if (dir === "") {
-      return parent;
-    }
-    var dirname = path.dirname(dir);
-    if (dirname && dirname !== '.') {
-      return getWatcherDir(dir.substr(dirname.length + 1), parent._dirs.get(dirname));
-    } else {
-      return parent._dirs.get(path.basename(dir));
-    }
-  }
-
   function addFiles() {
     testFS.makeFS(tempDir, {
       files: [
@@ -99,8 +86,8 @@ describe('SimpleTreeWatcher - filtering:', function() {
 
   describe('ignores dot files:', function() {
 
-    var newDotFile = path.join(tempDir, "sub1", ".test");
-    var newFolder = path.join(tempDir, "sub1", "stuff");
+    var newDotFile = path.join(tempDir, ".test");
+    var newFolder = path.join(tempDir, ".stuff");
 
     before((done) => {
       beforeHelp(done);
@@ -118,7 +105,7 @@ describe('SimpleTreeWatcher - filtering:', function() {
         return path.basename(filename)[0] !== ".";
       }
 
-      watcher = new SimpleTreeWatcher(tempDir, { filter: notStartsWithDot });
+      watcher = new SimpleFolderWatcher(tempDir, { filter: notStartsWithDot });
       recorder = new EventRecorder(watcher);
       wait(() => {
         var added = new Map();
@@ -135,11 +122,8 @@ describe('SimpleTreeWatcher - filtering:', function() {
           }
         });
         // -1 because the root is in the list
-        assert.equal(added.size, 3 + 3);
-        assert.equal(getWatcherDir("")._entries.size, 3);
-        assert.equal(getWatcherDir("")._dirs.size, 1);
-        assert.equal(getWatcherDir("sub1")._entries.size, 3);
-        assert.equal(getWatcherDir("sub1")._dirs.size, 0);
+        assert.equal(added.size, 3);
+        assert.equal(watcher._entries.size, 3);
         noMoreEvents();
         done();
       });

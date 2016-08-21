@@ -1,21 +1,21 @@
-SimpleTreeWatcher
+SimpleFolderWatcher
 ==========
 
-[![Build Status](https://travis-ci.org/greggman/simple-tree-watcher.svg?branch=master)](https://travis-ci.org/greggman/simple-tree-watcher)
+[![Build Status](https://travis-ci.org/greggman/simple-folder-watcher.svg?branch=master)](https://travis-ci.org/greggman/simple-folder-watcher)
 
-Watches a directory tree for changes
+Watches a directory for changes. To watch a tree see [simple-tree-watcher](https://github.com/greggman/simple-tree-watcher)
 
 Hopefully it actually works unlike other watch libaries
 
 ## Example:
 
 ```
-const SimpleTreeWatcher = require('simple-tree-watcher');
+const SimpleFolderWatcher = require('simple-folder-watcher');
 
 var dir = process.argv[2];
 console.log("watching: ", dir);
 
-var watcher = new SimpleTreeWatcher(dir);
+var watcher = new SimpleFolderWatcher(dir);
 watcher.on('add',    function(f, s)     { show("add   :", f, s    ); });
 watcher.on('create', function(f, s)     { show("create:", f, s    ); });
 watcher.on('remove', function(f, s, s2) { show("remove:", f, s, s2); });
@@ -28,11 +28,11 @@ function show(event, filepath, stat, oldStat) {
 
 ## Docs
 
-create an instance of `SimpleTreeWatcher` and attach events.
+create an instance of `SimpleFolderWatcher` and attach events.
 
-`new SimpleTreeWatcher(path, options)`
+`new SimpleFolderWatcher(path, options)`
 
-`SimpleTreeWatcher` is an `EventEmitter` so it has [the standard `EventEmitter` api](https://nodejs.org/api/events.html#events_class_eventemitter).
+`SimpleFolderWatcher` is an `EventEmitter` so it has [the standard `EventEmitter` api](https://nodejs.org/api/events.html#events_class_eventemitter).
 
 ### Events
 
@@ -58,7 +58,7 @@ Emitted when a file is change. Passed the filename, current stat, previous stat
 
 A function that is passed the path for every file and directory. It should return `true`
 to keep the file or directory or `false` to reject it. The path passed
-is relative to the original path when `SimpleTreeWatcher` was created.
+is relative to the original path when `SimpleFolderWatcher` was created.
 
 ### Methods
 

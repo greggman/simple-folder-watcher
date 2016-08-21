@@ -1,6 +1,6 @@
 'use strict';
 
-const debug = require('./lib/debug')('simple-tree-watcher');
+const debug = require('./lib/debug')('simple-folder-watcher');
 const fs = require('fs');
 const EventEmitter = require('events');
 const path = require('path');
@@ -15,13 +15,12 @@ function shallowCopy(src) {
 
 // Should I add option to normalize path (as in always "/" never "\"?
 
-class SimpleTreeWatcher extends EventEmitter {
+class SimpleFolderWatcher extends EventEmitter {
   constructor(filePath, options) {
     super();
     options = shallowCopy(options || {});
     options.addOrCreate = options.addOrCreate || 'add';
     this._entries = new Map();
-    this._dirs = new Map();
     this._filePath = filePath;
     this._options = options;
     this._filter = options.filter || this._pass;
@@ -35,14 +34,10 @@ class SimpleTreeWatcher extends EventEmitter {
     }
     this._watcher.removeListener('change', this._changeListener);
     this._watcher.removeListener('error', this._errorListener);
-    this._dirs.forEach((watcher) => {
-      watcher.close();
-    });
     this._watcher.close();
     this._watcher = null;
     // I hope there's no queued events.
     this._entries = null;
-    this._dirs = null;
     this._closed = true;
   }
 
@@ -132,15 +127,10 @@ class SimpleTreeWatcher extends EventEmitter {
         return;
       }
       var oldStats = this._entries.get(fileName);
-      var oldDir = this._dirs.get(fileName);
       if (err) {
         // TODO: check for type of error?
         if (oldStats) {
           this._entries.delete(fileName);
-          if (oldDir) {
-            oldDir._removeAll();
-            this._dirs.delete(fileName);
-          }
           this.emit('remove', fullPath, oldStats);
         }
       } else {
@@ -155,18 +145,6 @@ class SimpleTreeWatcher extends EventEmitter {
           this.emit(addOrCreate, fullPath, stats);
           scan = true;
         }
-        if (scan && stats.isDirectory()) {
-          var options = shallowCopy(this._options);
-          options.addOrCreate = addOrCreate;
-          var watcher = new SimpleTreeWatcher(fullPath, options);
-          ['add', 'create', 'remove', 'change'].forEach((event) => {
-            // We need arguments so we can't use => and ... is not yet supported
-            watcher.on(event, function() {
-              this._propogateEvent(event, arguments);
-            }.bind(this));
-          });
-          this._dirs.set(fileName, watcher);
-        }
       }
     });
   }
@@ -176,19 +154,10 @@ class SimpleTreeWatcher extends EventEmitter {
     if (this._closed) {
       return;
     }
-    // first files
-    this._dirs.forEach((watcher) => {
-      watcher._removeAll();
-    });
     this._entries.forEach((stats, fileName) => {
       this.emit('remove', path.join(this._filePath, fileName), stats);
     });
     this.close();
-  }
-
-  _propogateEvent(event, args) {
-    // args! :(
-    this.emit.call(this, event, args[0], args[1], args[2], args[3]);
   }
 
   _pass() {
@@ -196,5 +165,5 @@ class SimpleTreeWatcher extends EventEmitter {
   }
 }
 
-module.exports = SimpleTreeWatcher;
+module.exports = SimpleFolderWatcher;
 

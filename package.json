@@ -1,14 +1,14 @@
 {
-  "name": "simple-tree-watcher",
-  "version": "0.2.1",
-  "description": "Watches the FileSystem for changes",
+  "name": "simple-folder-watcher",
+  "version": "0.3.0",
+  "description": "Watches the a folder for changes",
   "main": "index.js",
   "scripts": {
     "test": "node node_modules/mocha/bin/mocha --recursive"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/greggman/simple-tree-watcher.git"
+    "url": "git+https://github.com/greggman/simple-folder-watcher.git"
   },
   "keywords": [
     "files",
@@ -20,9 +20,9 @@
   "author": "Gregg Tavares",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/greggman/simple-tree-watcher/issues"
+    "url": "https://github.com/greggman/simple-folder-watcher/issues"
   },
-  "homepage": "https://github.com/greggman/simple-tree-watcher#readme",
+  "homepage": "https://github.com/greggman/simple-folder-watcher#readme",
   "files": [
     "index.js",
     "lib/debug.js"
