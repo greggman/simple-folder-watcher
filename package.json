@@ -1,7 +1,7 @@
 {
   "name": "simple-folder-watcher",
   "version": "0.3.0",
-  "description": "Watches the a folder for changes",
+  "description": "Watches a folder for changes",
   "main": "index.js",
   "scripts": {
     "test": "node node_modules/mocha/bin/mocha --recursive"
